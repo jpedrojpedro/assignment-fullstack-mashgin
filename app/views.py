@@ -1,5 +1,4 @@
 import models
-import datetime as dt
 from init import app
 from flask import jsonify, abort
 
@@ -41,7 +40,7 @@ def add_product(order_id, product_id):
         return item.to_dict()
     item.quantity += 1
     item.save()
-    return item.to_dict()
+    return jsonify(item.to_dict())
 
 
 @app.route("/orders/<int:order_id>/products/<int:product_id>/remove", methods=['GET'])
@@ -53,9 +52,9 @@ def remove_product(order_id, product_id):
     if item.quantity == 0:
         item = models.Item.get_by_id(item.id)
         item.delete_instance()
-        return jsonify({})
+        return jsonify([])
     item.save()
-    return jsonify(item.to_dict)
+    return jsonify(item.to_dict())
 
 
 @app.route("/orders/<int:order_id>/items", methods=['GET'])

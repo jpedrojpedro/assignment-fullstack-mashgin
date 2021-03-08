@@ -6,7 +6,7 @@ from pathlib import Path
 import peewee as pw
 from init import db
 from playhouse.shortcuts import model_to_dict
-from playhouse.signals import Model, pre_save, post_save
+from playhouse.signals import Model, pre_save, post_save, post_delete
 
 
 def apply_cast(val):
@@ -107,7 +107,8 @@ class Item(BaseModel):
 
 
 @post_save(sender=Item)
-def on_post_save_handler(klass, obj, created):
+@post_delete(sender=Item)
+def on_post_save_or_delete_handler(klass, obj, created):
     Order.get_by_id(obj.order_id).recalculate()
 
 
