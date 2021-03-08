@@ -6,6 +6,7 @@ from pathlib import Path
 import peewee as pw
 from init import db
 from playhouse.shortcuts import model_to_dict
+from playhouse.signals import Model, pre_save, post_save
 
 
 def apply_cast(val):
@@ -27,14 +28,14 @@ def generate_number(attempts=50):
     return 'ERROR'
 
 
-class BaseModel(pw.Model):
+class BaseModel(Model):
     @classmethod
     def all(cls):
         objs = cls.select()
         ret = []
         for obj in objs:
             m_dict = model_to_dict(obj)
-            m_dict = {k: (str(v) if type(v) in [dt.datetime, decimal.Decimal] else v) for k, v in m_dict.items()}
+            m_dict = {k: apply_cast(v) for k, v in m_dict.items()}
             ret.append(m_dict)
         return ret
 
@@ -43,12 +44,14 @@ class BaseModel(pw.Model):
         m_dict = {k: apply_cast(v) for k, v in m_dict.items()}
         return m_dict
 
-    def save(self, force_insert=False, only=None):
-        setattr(self, "updated_at", dt.datetime.now())
-        super().save(force_insert=force_insert, only=only)
-
     class Meta:
         database = db
+
+
+@pre_save(sender=BaseModel)
+def on_pre_save_handler(klass, obj, created):
+    if not created:
+        setattr(obj, "updated_at", dt.datetime.now())
 
 
 class Category(BaseModel):
@@ -99,19 +102,13 @@ class Item(BaseModel):
     created_at = pw.DateTimeField(default=dt.datetime.now)
     updated_at = pw.DateTimeField(default=dt.datetime.now)
 
-    def save(self, force_insert=False, only=None):
-        Order.get_by_id(self.order_id).recalculate()
-        super().save(force_insert=force_insert, only=only)
-
-    @classmethod
-    def delete_by_id(cls, pk):
-        item = cls.get_by_id(pk)
-        order = item.order
-        cls.delete_by_id(pk)
-        order.recalculate()
-
     class Meta:
         table_name = 'item'
+
+
+@post_save(sender=Item)
+def on_post_save_handler(klass, obj, created):
+    Order.get_by_id(obj.order_id).recalculate()
 
 
 def create_tables():

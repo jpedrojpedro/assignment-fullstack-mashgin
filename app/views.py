@@ -40,7 +40,6 @@ def add_product(order_id, product_id):
         item.save()
         return item.to_dict()
     item.quantity += 1
-    item.updated_at = dt.datetime.now()
     item.save()
     return item.to_dict()
 
@@ -52,11 +51,19 @@ def remove_product(order_id, product_id):
         abort(404)
     item.quantity -= 1
     if item.quantity == 0:
-        models.Item.delete_by_id(item.id)
+        item = models.Item.get_by_id(item.id)
+        item.delete_instance()
         return jsonify({})
-    item.updated_at = dt.datetime.now()
     item.save()
     return jsonify(item.to_dict)
+
+
+@app.route("/orders/<int:order_id>/items", methods=['GET'])
+def show_items(order_id):
+    order = models.Order.get_or_none(id=order_id)
+    if not order:
+        abort(404)
+    return jsonify([i.to_dict() for i in order.items])
 
 
 @app.route("/", methods=['GET'])
