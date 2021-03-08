@@ -16,7 +16,7 @@
             "name": "Drinks"
         }
     ],
-    "items": [
+    "products": [
         {
             "category_id": 1,
             "id": 1,

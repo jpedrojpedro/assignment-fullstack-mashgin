@@ -1,15 +1,13 @@
-import json
-from pathlib import Path
+import models
 from init import app
 from flask import jsonify
 
 
 @app.route("/menu", methods=['GET'])
 def menu_index():
-    menu_path = Path("static", "menu.json")
-    with open(menu_path) as fp:
-        menu = json.loads(fp.read())
-        return jsonify(menu)
+    categories = models.Category.all()
+    products = models.Product.all()
+    return jsonify({"categories": categories, "products": products})
 
 
 @app.route("/", methods=['GET'])
