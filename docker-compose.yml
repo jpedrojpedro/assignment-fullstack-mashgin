@@ -1,0 +1,15 @@
+version: '3'
+services:
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    volumes:
+      - ./app:/var/app/
+    ports:
+      - 5000:5000
+    working_dir: /var/app
+    environment:
+      FLASK_APP: app.py
+      FLASK_ENV: development
+    command: python main.py
