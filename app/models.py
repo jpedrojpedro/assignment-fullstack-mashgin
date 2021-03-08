@@ -1,10 +1,22 @@
 import json
 import datetime as dt
 import decimal
+import random
 from pathlib import Path
 import peewee as pw
 from init import db
 from playhouse.shortcuts import model_to_dict
+
+
+def generate_number(attempts=50):
+    for _ in range(attempts):
+        prefix = 'M'
+        middle = dt.date.today().strftime("%y%m")
+        suffix = random.randint(0, 999999)
+        number = f"{prefix}{middle}{suffix:06}"
+        if not Order.get_or_none(number=number):
+            return number
+    return 'ERROR'
 
 
 class BaseModel(pw.Model):
@@ -48,7 +60,7 @@ class Product(BaseModel):
 
 class Order(BaseModel):
     id = pw.AutoField(primary_key=True)
-    name = pw.CharField()  # auto generated field
+    number = pw.CharField(default=generate_number)  # auto generated field
     total_amount = pw.DecimalField(decimal_places=2)
     created_at = pw.DateTimeField(default=dt.datetime.now)
     updated_at = pw.DateTimeField(default=dt.datetime.now)
