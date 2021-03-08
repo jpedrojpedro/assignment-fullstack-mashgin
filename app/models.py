@@ -8,6 +8,14 @@ from init import db
 from playhouse.shortcuts import model_to_dict
 
 
+def apply_cast(val):
+    if type(val) in [dt.datetime, decimal.Decimal]:
+        return str(val)
+    if type(val) is dict:
+        return {k: (str(v) if type(v) in [dt.datetime, decimal.Decimal] else v) for k, v in val.items()}
+    return val
+
+
 def generate_number(attempts=50):
     for _ in range(attempts):
         prefix = 'M'
@@ -29,6 +37,15 @@ class BaseModel(pw.Model):
             m_dict = {k: (str(v) if type(v) in [dt.datetime, decimal.Decimal] else v) for k, v in m_dict.items()}
             ret.append(m_dict)
         return ret
+
+    def to_dict(self):
+        m_dict = model_to_dict(self)
+        m_dict = {k: apply_cast(v) for k, v in m_dict.items()}
+        return m_dict
+
+    def save(self, force_insert=False, only=None):
+        setattr(self, "updated_at", dt.datetime.now())
+        super().save(force_insert=force_insert, only=only)
 
     class Meta:
         database = db
@@ -61,9 +78,13 @@ class Product(BaseModel):
 class Order(BaseModel):
     id = pw.AutoField(primary_key=True)
     number = pw.CharField(default=generate_number)  # auto generated field
-    total_amount = pw.DecimalField(decimal_places=2)
+    total_amount = pw.DecimalField(decimal_places=2, default=0)
     created_at = pw.DateTimeField(default=dt.datetime.now)
     updated_at = pw.DateTimeField(default=dt.datetime.now)
+
+    def recalculate(self):
+        self.total_amount = sum([i.quantity * i.price for i in self.items])
+        self.save()
 
     class Meta:
         table_name = 'order'
@@ -77,6 +98,17 @@ class Item(BaseModel):
     price = pw.DecimalField(decimal_places=2)
     created_at = pw.DateTimeField(default=dt.datetime.now)
     updated_at = pw.DateTimeField(default=dt.datetime.now)
+
+    def save(self, force_insert=False, only=None):
+        Order.get_by_id(self.order_id).recalculate()
+        super().save(force_insert=force_insert, only=only)
+
+    @classmethod
+    def delete_by_id(cls, pk):
+        item = cls.get_by_id(pk)
+        order = item.order
+        cls.delete_by_id(pk)
+        order.recalculate()
 
     class Meta:
         table_name = 'item'
