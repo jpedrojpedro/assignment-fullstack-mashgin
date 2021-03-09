@@ -8,12 +8,15 @@
               :value="c.id"
           >{{ c.name }}</option>
       </select>
-      <Product
-          v-for="p in products"
-          v-bind:key="p.id"
-          :img_path="build_assets_url(p.image_id)"
-          :name="p.name"
-      />
+      <div class="row row-cols-1 row-cols-sm-2 row-cols-sm-3 row-cols-md-4 g-4">
+          <Product
+              v-for="p in products"
+              v-bind:key="p.id"
+              :img_path="build_assets_url(p.image_id)"
+              :name="p.name"
+              :price="p.price"
+          />
+      </div>
   </div>
 </template>
 
@@ -43,7 +46,7 @@ export default {
     methods: {
         build_assets_url(filename) {
             return `http://localhost:5000/assets/${filename}.jpg`
-        }
+        },
     }
 }
 
