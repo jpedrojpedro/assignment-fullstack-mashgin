@@ -15,7 +15,7 @@ def menu_index():
 def show_asset(name):
     filename = Path("./static", name)
     if filename.exists():
-        return send_file(name, mimetype='image/gif')
+        return send_file(str(filename), mimetype='image/jpg')
     abort(404)
 
 
