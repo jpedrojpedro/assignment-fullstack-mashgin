@@ -11,7 +11,7 @@
       <Product
           v-for="p in products"
           v-bind:key="p.id"
-          img_path="https://www.alegrafoods.com.br/wp-content/uploads/2020/09/hot-dogs-pwy2hz8-620x350.jpg"
+          :img_path="build_assets_url(p.image_id)"
           :name="p.name"
       />
   </div>
@@ -39,6 +39,11 @@ export default {
             this.categories = response.data.categories
             this.products = response.data.products
         })
+    },
+    methods: {
+        build_assets_url(filename) {
+            return `http://localhost:5000/assets/${filename}.jpg`
+        }
     }
 }
 
