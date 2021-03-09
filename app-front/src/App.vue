@@ -5,15 +5,15 @@
               name="Cachorro Quente"
       />
       {{ categories }}
+      {{ products }}
+      Complete: {{ full_info }}
   </div>
 </template>
 
 <script>
+import axios from 'axios'
 import Product from './components/Product.vue'
-
 import data from './menu.json'
-
-// testar axios aqui dentro
 
 export default {
     name: 'App',
@@ -24,7 +24,13 @@ export default {
         return {
             categories: data.categories,
             products: data.products,
+            full_info: null,
         }
+    },
+    mounted() {
+      axios
+        .get('http://localhost:5000/menu')
+        .then(response => (this.full_info = response))
     }
 }
 
