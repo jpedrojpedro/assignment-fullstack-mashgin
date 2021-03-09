@@ -9,8 +9,10 @@
           >{{ c.name }}</option>
       </select>
       <Product
-              img_path="https://www.alegrafoods.com.br/wp-content/uploads/2020/09/hot-dogs-pwy2hz8-620x350.jpg"
-              name="Cachorro Quente"
+          v-for="p in products"
+          v-bind:key="p.id"
+          img_path="https://www.alegrafoods.com.br/wp-content/uploads/2020/09/hot-dogs-pwy2hz8-620x350.jpg"
+          :name="p.name"
       />
   </div>
 </template>

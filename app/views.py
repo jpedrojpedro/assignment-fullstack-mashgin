@@ -1,6 +1,7 @@
 import models
+from pathlib import Path
 from init import app
-from flask import jsonify, abort
+from flask import jsonify, abort, send_file
 
 
 @app.route("/menu", methods=['GET'])
@@ -8,6 +9,14 @@ def menu_index():
     categories = models.Category.all()
     products = models.Product.all()
     return jsonify({"categories": categories, "products": products})
+
+
+@app.route("/assets/<name>", methods=['GET'])
+def show_asset(name):
+    filename = Path("./static", name)
+    if filename.exists():
+        return send_file(name, mimetype='image/gif')
+    abort(404)
 
 
 @app.route("/orders", methods=['POST'])
