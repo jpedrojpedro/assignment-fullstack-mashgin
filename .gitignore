@@ -214,4 +214,5 @@ dmypy.json
 cython_debug/
 
 # sqlite3
-app/data/
+app/data/*
+!app/data/.keep
