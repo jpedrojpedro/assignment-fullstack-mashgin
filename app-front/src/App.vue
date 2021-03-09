@@ -1,19 +1,23 @@
 <template>
   <div id="app">
+      <select class="form-select" aria-label="Default select example">
+          <option selected>Select category...</option>
+          <option
+              v-for="c in categories"
+              v-bind:key="c.id"
+              :value="c.id"
+          >{{ c.name }}</option>
+      </select>
       <Product
               img_path="https://www.alegrafoods.com.br/wp-content/uploads/2020/09/hot-dogs-pwy2hz8-620x350.jpg"
               name="Cachorro Quente"
       />
-      {{ categories }}
-      {{ products }}
-      Complete: {{ full_info }}
   </div>
 </template>
 
 <script>
 import axios from 'axios'
 import Product from './components/Product.vue'
-import data from './menu.json'
 
 export default {
     name: 'App',
@@ -22,15 +26,17 @@ export default {
     },
     data() {
         return {
-            categories: data.categories,
-            products: data.products,
-            full_info: null,
+            categories: [],
+            products: [],
         }
     },
-    mounted() {
+    beforeMount() {
       axios
         .get('http://localhost:5000/menu')
-        .then(response => (this.full_info = response))
+        .then(response => {
+            this.categories = response.data.categories
+            this.products = response.data.products
+        })
     }
 }
 
