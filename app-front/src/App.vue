@@ -12,10 +12,11 @@
             <Product
                 v-for="p in products"
                 v-bind:key="p.id"
+                :id="p.id"
                 :img_path="build_assets_url(p.image_id)"
                 :name="p.name"
                 :price="p.price"
-                @add_to_cart="update_total_amount"
+                @add_to_cart="update_order"
             />
         </div>
         <footer class="footer fixed-bottom py-2 bg-light" v-if="total_amount">
@@ -24,7 +25,10 @@
                     <span class="font-weight-black me-2"><b>Total:</b>&nbsp;{{ total_amount | apply_currency }}</span>
                 </div>
                 <div class="col">
-                    <button type="button" class="btn btn-sm btn-outline-primary" @click="clear_cart">Empty Cart</button>
+                    <button type="button" class="btn btn-sm btn-outline-primary" @click="finish_order">Finish Order</button>
+                </div>
+                <div class="col">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" @click="clear_cart">Empty Cart</button>
                 </div>
             </div>
         </footer>
@@ -44,25 +48,48 @@ export default {
         return {
             categories: [],
             products: [],
+            order: null,
+            items: [],
             total_amount: 0,
         }
     },
     beforeMount() {
-      axios
-        .get('http://localhost:5000/menu')
-        .then(response => {
-            this.categories = response.data.categories
-            this.products = response.data.products
-        })
+        axios
+            .get('http://localhost:5000/menu')
+            .then(response => {
+                this.categories = response.data.categories
+                this.products = response.data.products
+            })
     },
     methods: {
         build_assets_url(filename) {
             return `http://localhost:5000/assets/${filename}.jpg`
         },
-        update_total_amount({amount}) {
-            this.total_amount += amount
+        update_order(payload) {
+            this.items.push(payload)
+            this.total_amount += payload.price
+            if (!this.order) {
+                axios
+                    .post('http://localhost:5000/orders')
+                    .then(response => {
+                        console.log("Route: create_order :: " + response.data.number)
+                        this.order = response.data.id
+                    })
+            }
+        },
+        finish_order() {
+            this.items.forEach((item) => {
+                axios
+                    .get(`http://localhost:5000/orders/${this.order}/products/${item.product_id}/add`)
+                    .then(response => {
+                        console.log("Route: add_product :: " + response.data)
+                    })
+            })
+            this.clear_cart()
         },
         clear_cart() {
+            this.order = null
+            this.items = []
             this.total_amount = 0
         },
         search_elements() {
@@ -81,7 +108,7 @@ export default {
                     pi[i].style.display = "none";
                 }
             }
-        }
+        },
     }
 }
 

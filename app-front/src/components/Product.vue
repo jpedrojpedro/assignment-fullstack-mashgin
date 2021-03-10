@@ -15,13 +15,14 @@
     export default {
         name: "Product",
         props: {
+            id: Number,
             img_path: String,
             name: String,
             price: Number,
         },
         methods: {
             add_to_cart() {
-                this.$emit("add_to_cart", {amount: this.price})
+                this.$emit("add_to_cart", {product_id: this.id, price: this.price})
             }
         }
     }
