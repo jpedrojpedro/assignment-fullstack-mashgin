@@ -47,7 +47,7 @@ npm run serve  # Compiles and hot-reloads for development
 npm run build  # Compiles and minifies for production
 ```
 
-#### Navigating
+#### Exploring
 
 - open browser and access `http://localhost:8080/`
   - we recommend to use Chrome because there is a problem with CORS
