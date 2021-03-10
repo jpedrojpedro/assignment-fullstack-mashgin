@@ -5,6 +5,7 @@
             <div class="card-body">
                 <p class="card-text">{{ name }}</p>
                 <p class="card-text">{{ format_currency }}</p>
+                <button type="button" class="btn btn-sm btn-outline-primary">Add</button>
             </div>
         </div>
     </div>

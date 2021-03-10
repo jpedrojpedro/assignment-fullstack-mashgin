@@ -17,6 +17,9 @@
               :price="p.price"
           />
       </div>
+      <footer class="footer fixed-bottom mt-auto py-2 bg-light" v-if="total">
+          <span class="font-weight-black">{{ total }}</span>
+      </footer>
   </div>
 </template>
 
@@ -33,6 +36,7 @@ export default {
         return {
             categories: [],
             products: [],
+            total: 10,
         }
     },
     beforeMount() {
