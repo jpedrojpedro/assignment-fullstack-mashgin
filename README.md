@@ -35,6 +35,8 @@ make run    # Start application
 make test   # Perform unit tests on application
 ```
 
+The web server will be running on `http://localhost:5000/`.
+
 #### Frontend
 
 Here are the available commands:
@@ -47,7 +49,9 @@ npm run build  # Compiles and minifies for production
 
 #### Navigating
 
-- open browser on `http://localhost:8080/`
+- open browser and access `http://localhost:8080/`
+  - we recommend to use Chrome because there is a problem with CORS
+  - use this Chrome Extension called [Allow CORS](https://chrome.google.com/webstore/detail/allow-cors-access-control/lhobafahddgcelffkeicbaginigeejlf)
 
 ### Directory Structure
 
