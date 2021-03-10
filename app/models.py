@@ -10,8 +10,10 @@ from playhouse.signals import Model, pre_save, post_save, post_delete
 
 
 def apply_cast(val):
-    if type(val) in [dt.datetime, decimal.Decimal]:
+    if type(val) is dt.datetime:
         return str(val)
+    if type(val) is decimal.Decimal:
+        return float(val)
     if type(val) is dict:
         return {k: (str(v) if type(v) in [dt.datetime, decimal.Decimal] else v) for k, v in val.items()}
     return val

@@ -15,10 +15,11 @@
               :img_path="build_assets_url(p.image_id)"
               :name="p.name"
               :price="p.price"
+              @add="added"
           />
       </div>
       <footer class="footer fixed-bottom mt-auto py-2 bg-light" v-if="total">
-          <span class="font-weight-black">{{ total }}</span>
+          <span class="font-weight-black">{{ total | apply_currency }}</span>
       </footer>
   </div>
 </template>
@@ -36,7 +37,7 @@ export default {
         return {
             categories: [],
             products: [],
-            total: 10,
+            total: 0,
         }
     },
     beforeMount() {
@@ -51,6 +52,9 @@ export default {
         build_assets_url(filename) {
             return `http://localhost:5000/assets/${filename}.jpg`
         },
+        added({value}) {
+            this.total += value
+        }
     }
 }
 
