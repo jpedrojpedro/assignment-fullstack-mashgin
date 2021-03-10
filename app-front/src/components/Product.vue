@@ -5,7 +5,7 @@
             <div class="card-body">
                 <p class="card-text">{{ name }}</p>
                 <p class="card-text">{{ price | apply_currency }}</p>
-                <button type="button" class="btn btn-sm btn-outline-primary" @click="foo">Add</button>
+                <button type="button" class="btn btn-sm btn-outline-primary" @click="add_to_cart">Add</button>
             </div>
         </div>
     </div>
@@ -20,8 +20,8 @@
             price: Number,
         },
         methods: {
-            foo() {
-                this.$emit("add", {value: this.price})
+            add_to_cart() {
+                this.$emit("add_to_cart", {amount: this.price})
             }
         }
     }

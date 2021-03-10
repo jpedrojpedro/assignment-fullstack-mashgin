@@ -15,11 +15,18 @@
               :img_path="build_assets_url(p.image_id)"
               :name="p.name"
               :price="p.price"
-              @add="added"
+              @add_to_cart="update_total_amount"
           />
       </div>
-      <footer class="footer fixed-bottom mt-auto py-2 bg-light" v-if="total">
-          <span class="font-weight-black">{{ total | apply_currency }}</span>
+      <footer class="footer fixed-bottom mt-auto py-2 bg-light" v-if="total_amount">
+          <div class="row">
+            <div class="col">
+                <span class="font-weight-black me-2"><b>Total:</b>&nbsp;{{ total_amount | apply_currency }}</span>
+            </div>
+            <div class="col">
+                <button type="button" class="btn btn-sm btn-outline-primary" @click="clear_cart">Empty Cart</button>
+            </div>
+          </div>
       </footer>
   </div>
 </template>
@@ -37,7 +44,7 @@ export default {
         return {
             categories: [],
             products: [],
-            total: 0,
+            total_amount: 0,
         }
     },
     beforeMount() {
@@ -52,8 +59,11 @@ export default {
         build_assets_url(filename) {
             return `http://localhost:5000/assets/${filename}.jpg`
         },
-        added({value}) {
-            this.total += value
+        update_total_amount({amount}) {
+            this.total_amount += amount
+        },
+        clear_cart() {
+            this.total_amount = 0
         }
     }
 }
