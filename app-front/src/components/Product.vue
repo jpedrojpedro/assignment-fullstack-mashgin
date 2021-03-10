@@ -1,5 +1,5 @@
 <template>
-    <div class="col">
+    <div class="col product-card">
         <div class="card" style="width: 18rem;">
             <img :src="img_path" class="card-img-top" :alt="name" style="width: 18rem; height: 18rem;">
             <div class="card-body">

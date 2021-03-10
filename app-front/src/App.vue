@@ -1,34 +1,34 @@
 <template>
-  <div id="app">
-      <select class="form-select" aria-label="Default select example">
-          <option selected>Select category...</option>
-          <option
-              v-for="c in categories"
-              v-bind:key="c.id"
-              :value="c.id"
-          >{{ c.name }}</option>
-      </select>
-      <div class="row row-cols-1 row-cols-sm-2 row-cols-sm-3 row-cols-md-4 g-4">
-          <Product
-              v-for="p in products"
-              v-bind:key="p.id"
-              :img_path="build_assets_url(p.image_id)"
-              :name="p.name"
-              :price="p.price"
-              @add_to_cart="update_total_amount"
-          />
-      </div>
-      <footer class="footer fixed-bottom mt-auto py-2 bg-light" v-if="total_amount">
-          <div class="row">
-            <div class="col">
-                <span class="font-weight-black me-2"><b>Total:</b>&nbsp;{{ total_amount | apply_currency }}</span>
+    <div id="app">
+        <div class="row">
+            <div class="col"></div>
+            <div class="col mb-3">
+                <input id="search-product" type="text" class="form-control" placeholder="Type desired product name"
+                   aria-label="Search for products" aria-describedby="button-addon2" v-on:keyup="search_elements">
             </div>
-            <div class="col">
-                <button type="button" class="btn btn-sm btn-outline-primary" @click="clear_cart">Empty Cart</button>
+            <div class="col"></div>
+        </div>
+        <div id="products-list" class="row row-cols-1 row-cols-sm-2 row-cols-sm-3 row-cols-md-4 g-4 mb-5">
+            <Product
+                v-for="p in products"
+                v-bind:key="p.id"
+                :img_path="build_assets_url(p.image_id)"
+                :name="p.name"
+                :price="p.price"
+                @add_to_cart="update_total_amount"
+            />
+        </div>
+        <footer class="footer fixed-bottom py-2 bg-light" v-if="total_amount">
+            <div class="row">
+                <div class="col">
+                    <span class="font-weight-black me-2"><b>Total:</b>&nbsp;{{ total_amount | apply_currency }}</span>
+                </div>
+                <div class="col">
+                    <button type="button" class="btn btn-sm btn-outline-primary" @click="clear_cart">Empty Cart</button>
+                </div>
             </div>
-          </div>
-      </footer>
-  </div>
+        </footer>
+    </div>
 </template>
 
 <script>
@@ -64,6 +64,23 @@ export default {
         },
         clear_cart() {
             this.total_amount = 0
+        },
+        search_elements() {
+            let input, filter, pl, pi, a, i, txtValue;
+            input = document.getElementById('search-product');
+            filter = input.value.toUpperCase();
+            pl = document.getElementById("products-list");
+            pi = pl.getElementsByClassName('product-card');
+
+            for (i = 0; i < pi.length; i++) {
+                a = pi[i].getElementsByTagName("p")[0];
+                txtValue = a.textContent || a.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                    pi[i].style.display = "";
+                } else {
+                    pi[i].style.display = "none";
+                }
+            }
         }
     }
 }
